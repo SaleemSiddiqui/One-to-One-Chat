@@ -1,22 +1,19 @@
 from flask import Flask,render_template
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextField
+from flask_socketio import SocketIO, send
 
 app= Flask(__name__)
 app.config['SECRET_KEY']= 'saleem'
+socketio =SocketIO(app)
 
-@app.route('/form')
+
+
+@app.route('/')
 def form():
-    message=list(range(0,9))
-    for i in range(0,9):
-        message[i]="my name is saleem"
-    
-    header1="<h5>"
-    header2="</h5"
-    StringHeader=""
-    for s in message:
-        StringHeader+=header1+s+header2
-    return render_template('chat.html',SDoc=StringHeader)
+    return render_template('chat.html')
+
+@socketio.on('message')
+def handle_mess(mess):
+    send(mess, broadcast=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, host='localhost', port=5000) 
